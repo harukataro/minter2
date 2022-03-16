@@ -1,0 +1,8 @@
+start local internet identity server
+    II_FETCH_ROOT_KEY=1 dfx deploy --no-wallet --argument '(null)'
+start local subnet
+    dfx start
+depoly
+    dfx deploy --argument '("sample_nft","NFT")'
+start React local test
+    npm start

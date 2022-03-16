@@ -8,6 +8,7 @@ import Array "mo:base/Array";
 import Iter "mo:base/Iter";
 import T "dip721_types";
 import Buffer "mo:base/Buffer";
+import Random "mo:base/Random";
 
 actor class DRC721(_name : Text, _symbol : Text) {
 
@@ -26,7 +27,21 @@ actor class DRC721(_name : Text, _symbol : Text) {
     private let tokenApprovals : HashMap.HashMap<T.TokenId, Principal> = HashMap.fromIter<T.TokenId, Principal>(tokenApprovalsEntries.vals(), 10, Nat.equal, Hash.hash);
     private let operatorApprovals : HashMap.HashMap<Principal, [Principal]> = HashMap.fromIter<Principal, [Principal]>(operatorApprovalsEntries.vals(), 10, Principal.equal, Principal.hash);
 
-    private let baseUri = "https://127.0.0.1/token/";
+    private let baseUri = "token/";
+
+    private let svgNames = [
+        "BASE_ART.svg",
+        "BIRTHDAY.svg",
+        "BLACK.svg",
+        "BLUE_COLOR.svg",
+        "BLUE_RED.svg",
+        "CROWN.svg",
+        "GREEN.svg",
+        "HAT.svg",
+        "RED.svg",
+        "WITH_CHAIN.svg",
+        "WITH_RING.svg"
+    ];
 
     public shared func balanceOf(p : Principal) : async ?Nat {
         return balances.get(p);
@@ -126,7 +141,9 @@ actor class DRC721(_name : Text, _symbol : Text) {
     // Mint with automatic uri
     public shared ({caller}) func mintAuto() : async Nat {
         tokenPk += 1;
-        let uri = baseUri # Nat.toText(tokenPk) # ".png";
+        let brob = await Random.blob();
+        let idx= Random.rangeFrom(10, brob) % svgNames.size();
+        let uri = baseUri # svgNames[idx];
         _mint(caller, tokenPk, uri);
         return tokenPk;
     };
